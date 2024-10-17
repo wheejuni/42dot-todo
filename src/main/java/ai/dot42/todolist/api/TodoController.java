@@ -8,10 +8,5 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/v1/todo")
 public class TodoController {
 
-    @GetMapping
-    public void getTodos() {
-
-    }
-
     //TODO 할일 목록을 추가하거나 삭제하는 API도 추가 구현
 }
