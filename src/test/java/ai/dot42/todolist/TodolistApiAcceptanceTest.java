@@ -29,10 +29,14 @@ public class TodolistApiAcceptanceTest {
 
     @Test
     public void shouldReturnFiveItemsInResponse() throws Exception {
-        mockMvc.perform(get("/api/v1/todo"))
+        final String contentAsString = mockMvc.perform(get("/api/v1/todo"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.items").isArray())
-                .andExpect(jsonPath("$.items.length()").value(5));
+                .andReturn().getResponse().getContentAsString();
+
+        final TodoListResponse response = objectMapper.readValue(contentAsString, new TypeReference<TodoListResponse>() {});
+
+        assertNotNull(response);
+        assertEquals(response.getCount(), 5);
     }
 
     @Test
