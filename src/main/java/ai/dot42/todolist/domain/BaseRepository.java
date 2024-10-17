@@ -7,6 +7,10 @@ public abstract class BaseRepository<T, ID> {
 
     private Map<ID, T> entry;
 
+    protected BaseRepository(Map<ID, T> entry) {
+        this.entry = entry;
+    }
+
     public T save(T entity, ID id) {
         return entry.put(id, entity);
     }
