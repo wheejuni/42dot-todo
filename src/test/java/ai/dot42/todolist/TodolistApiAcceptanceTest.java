@@ -41,11 +41,11 @@ public class TodolistApiAcceptanceTest {
                 .andExpect(status().isCreated())
                 .andReturn().getResponse().getContentAsString();
 
-        final Map<String, Object> responseMap = objectMapper.readValue(contentAsString, new TypeReference<Map<String, Object>>() {
+        final TodoCreatedResponse response = objectMapper.readValue(contentAsString, new TypeReference<TodoCreatedResponse>() {
         });
 
-        assertNotNull(responseMap);
-        assertNotNull(responseMap.get("id"));
+        assertNotNull(response);
+        assertNotNull(response.getTodo().getTodoItemId());
     }
 
     @Test
@@ -55,12 +55,12 @@ public class TodolistApiAcceptanceTest {
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString();
 
-        final Map<String, Object> responseMap = objectMapper.readValue(contentAsString, new TypeReference<Map<String, Object>>() {
+        final TodoItemResponse response = objectMapper.readValue(contentAsString, new TypeReference<TodoItemResponse>() {
         });
 
-        assertNotNull(responseMap);
-        assertNotNull(responseMap.get("todo"));
-        final Todo todo = responseMap.get("todo");
-        assertEquals(expectedTodoId, todo.getId());
+        assertNotNull(response);
+        assertNotNull(response.getTodo());
+        final TodoItemDetail todo = response.getTodo();
+        assertEquals(expectedTodoId, todo.getTodoItemId());
     }
 }
