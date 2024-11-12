@@ -1,37 +1,91 @@
 package ai.dot42.todolist.service;
 
+import ai.dot42.todolist.repository.Todo;
+import ai.dot42.todolist.repository.TodoRepository;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
 
 public class TodoServiceTest {
+
+    @Mock
+    private TodoRepository todoRepository;
+
     @InjectMocks
     private TodoService todoService;
 
-    @Test
-    public void shouldReturnTodoList() throws Exception {
-        final List<Todo> todoList = todoService.getList();
-        assertNotNull(todoList);
-        assertEquals(5, todoList.size());
+    private final Todo todo = new Todo(
+            1,
+            "Test Todo",
+            "This is a test todo"
+    );
+
+    public TodoServiceTest() {
+        MockitoAnnotations.openMocks(this);
+    }
+
+    @AfterEach
+    public void tearDown() {
+        clearInvocations(todoRepository);
     }
 
     @Test
-    public void shouldReturnTodoItem() throws Exception {
-        final String expectedTodoId = "expected-id";
-        final Todo todo = todoService.findById(expectedTodoId);
-        assertNotNull(todo);
-        assertEquals(expectedTodoId, todo.getId());
+    public void createTodo() {
+        when(todoRepository.save(any(Todo.class))).thenReturn(todo);
+
+        Todo createdTodo = todoService.createTodo(todo.getTitle(), todo.getDescription());
+
+        assertThat(createdTodo).isEqualTo(todo);
+        verify(todoRepository, times(1)).save(any(Todo.class));
     }
 
     @Test
-    public void shouldCreateTodoItem() throws Exception {
-        final String expectedTitle = "title";
-        final String expectedContent = "content";
-        final Todo todo = todoService.create(expectedTitle, expectedContent);
-        assertNotNull(todo);
-        assertEquals(expectedTitle, createdTodo.getTitle());
-        assertEquals(expectedContent, createdTodo.getContent());
+    public void getTodoList() {
+        when(todoRepository.getAll()).thenReturn(List.of(todo, todo));
+
+        List<Integer> todoList = todoService.getTodoList();
+
+        assertThat(todoList).containsExactly(todo.getId(), todo.getId());
+        verify(todoRepository, times(1)).getAll();
+    }
+
+    @Test
+    public void updateTodo() {
+        Todo updatedTodo = new Todo(
+                1,
+                "Updated Test Todo",
+                "This is an updated test todo"
+        );
+
+        when(todoRepository.save(any(Todo.class))).thenReturn(updatedTodo);
+
+        Todo result = todoService.updateTodo(updatedTodo);
+
+        assertThat(result).isEqualTo(updatedTodo);
+        verify(todoRepository, times(1)).save(any(Todo.class));
+    }
+
+    @Test
+    public void deleteTodo() {
+        when(todoRepository.save(any(Todo.class))).thenReturn(todo);
+        todoService.createTodo(todo.getTitle(), todo.getDescription());
+
+        doNothing().when(todoRepository).deleteById(anyInt());
+        todoService.deleteTodoById(todo.getId());
+
+        when(todoRepository.getAll()).thenReturn(List.of());
+        List<Integer> todoList = todoService.getTodoIds();
+
+        assertThat(todoList).doesNotContain(todo.getId());
+        verify(todoRepository, times(1)).deleteById(anyInt());
+        verify(todoRepository, times(1)).getAll();
     }
 }
