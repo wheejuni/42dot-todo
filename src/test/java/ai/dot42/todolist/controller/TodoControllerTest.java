@@ -13,6 +13,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
+import java.net.URI;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -38,7 +39,7 @@ public class TodoControllerTest {
         List<Integer> expectedTodoIdList = List.of(1, 2, 3);
         Mockito.when(todoService.getTodoIds()).thenReturn(expectedTodoIdList);
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/todos")) // replace with correct URI
+        mockMvc.perform(MockMvcRequestBuilders.request("적당한 http method를 넣어주세요", new URI("{fix it restful uri}"))) // replace with correct URI
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.returnCode", is("SUCCESS")))
                 .andExpect(jsonPath("$.data", hasSize(expectedTodoIdList.size())));
@@ -51,7 +52,7 @@ public class TodoControllerTest {
 
         Mockito.when(todoService.getTodo(anyInt())).thenReturn(expectedTodo);
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/todos/{id}", idToFind)) // replace with correct URI
+        mockMvc.perform(MockMvcRequestBuilders.request("적당한 http method를 넣어주세요", new URI("{fix it restful uri}"))) // replace with correct URI
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.returnCode", is("SUCCESS")))
                 .andExpect(jsonPath("$.data.id", is(expectedTodo.getId())))
@@ -66,7 +67,7 @@ public class TodoControllerTest {
 
         Mockito.when(todoService.createTodo(any(String.class), any(String.class))).thenReturn(createdTodo);
 
-        mockMvc.perform(MockMvcRequestBuilders.post("/todos") // replace with correct URI
+        mockMvc.perform(MockMvcRequestBuilders.request("적당한 http method를 넣어주세요", new URI("{fix it restful uri}")) // replace with correct URI
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request))
                 )
@@ -85,7 +86,7 @@ public class TodoControllerTest {
 
         Mockito.when(todoService.updateTodo(any(Todo.class))).thenReturn(updatedTodo);
 
-        mockMvc.perform(MockMvcRequestBuilders.put("/todos/{id}", idToUpdate) // replace with correct URI
+        mockMvc.perform(MockMvcRequestBuilders.request("적당한 http method를 넣어주세요", new URI("{fix it restful uri}")) // replace with correct URI
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request))
                 )
@@ -102,7 +103,7 @@ public class TodoControllerTest {
 
         Mockito.doNothing().when(todoService).deleteTodoById(idToDelete);
 
-        mockMvc.perform(MockMvcRequestBuilders.delete("/todos/{id}", idToDelete)) // replace with correct URI
+        mockMvc.perform(MockMvcRequestBuilders.request("적당한 http method를 넣어주세요", new URI("{fix it restful uri}"))) // replace with correct URI
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.returnCode", is("SUCCESS")));
     }
